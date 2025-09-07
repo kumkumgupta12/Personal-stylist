@@ -1,6 +1,5 @@
-
 import React, { useState, useCallback, useMemo } from 'react';
-import { generateClothedModel, addAccessories } from './services/geminiService';
+import { generateTopAndBottomOutfit, generateFullBodyOutfit, addAccessories } from './services/geminiService';
 import { WardrobeSection } from './components/WardrobeSection';
 import { ImageUploader } from './components/ImageUploader';
 import { OutfitGallery } from './components/OutfitGallery';
@@ -97,7 +96,14 @@ const App: React.FC = () => {
       setOutfitResults(prev => prev.map(r => r.id === result.id ? { ...r, status: 'generating' } : r));
 
       try {
-        const generatedImageBase64 = await generateClothedModel(modelImage, { top: result.top, bottom: result.bottom, dress: result.dress });
+        let generatedImageBase64: string;
+        if (result.top && result.bottom) {
+          generatedImageBase64 = await generateTopAndBottomOutfit(modelImage, result.top, result.bottom);
+        } else if (result.dress) {
+          generatedImageBase64 = await generateFullBodyOutfit(modelImage, result.dress);
+        } else {
+            throw new Error("Invalid combination for generation.");
+        }
         setOutfitResults(prev => prev.map(r => r.id === result.id ? { ...r, status: 'success', imageUrl: generatedImageBase64 } : r));
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
@@ -148,7 +154,7 @@ const App: React.FC = () => {
         setProgressMessage(`Styling with accessories (${i + 1}/${combinations.length})...`);
         setAccessoryResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'generating' } : r));
         try {
-            const generatedImageBase64 = await addAccessories(baseImageForStyling, combo);
+            const generatedImageBase64 = await addAccessories(baseImageForStyling, combo, selectedOutfit);
             setAccessoryResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'success', imageUrl: generatedImageBase64 } : r));
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
