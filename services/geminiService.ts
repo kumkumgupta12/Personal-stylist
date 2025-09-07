@@ -26,7 +26,7 @@ export const generateOutfit = async (
   };
 
   const textPart = {
-    text: `Take the person from the first image, the top from the second image, and the trousers/skirt from the third image. Generate a new image of the person wearing both the top and the bottom clothing items. Maintain the person's pose, face, and the background from the first image. The final image should be realistic.`,
+    text: `Take the person from the first image. Your task is to realistically place the top from the second image and the bottom clothing item (trousers/skirt) from the third image onto this person. It is crucial that you preserve the exact appearance, texture, color, and design of both the top and bottom clothing items as they appear in their respective images. Do not alter the clothing in any way. Also, maintain the person's original pose, face, and the background from the first image. The final output should be a single, photorealistic image of the person wearing the provided clothes. IMPORTANT: Ensure the final image shows the full person and that their head and face are completely visible, not cropped or cut off in any way.`,
   };
 
   try {

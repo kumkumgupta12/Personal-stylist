@@ -1,7 +1,7 @@
 
 import React from 'react';
 import type { OutfitResult } from '../types';
-import { PersonIcon, ShirtIcon, PantsIcon } from './icons';
+import { PersonIcon, ShirtIcon, PantsIcon, DownloadIcon } from './icons';
 
 interface OutfitGalleryProps {
   results: OutfitResult[];
@@ -30,11 +30,33 @@ const SkeletonCard: React.FC<{ result: OutfitResult; modelImageBase64?: string }
 };
 
 const ResultCard: React.FC<{ result: OutfitResult; modelImageBase64?: string; }> = ({ result, modelImageBase64 }) => {
+  const handleDownload = (base64Image: string, topName: string, bottomName: string) => {
+    const link = document.createElement('a');
+    link.href = `data:image/png;base64,${base64Image}`;
+    // Sanitize names for filename
+    const sanitizedTop = topName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const sanitizedBottom = bottomName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    link.download = `outfit-${sanitizedTop}-${sanitizedBottom}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+    
   return (
     <div className="w-full bg-white p-3 rounded-xl shadow-sm border border-gray-200 transition-all duration-300">
-      <div className="w-full aspect-square rounded-lg mb-3 overflow-hidden">
+      <div className="w-full aspect-square rounded-lg mb-3 overflow-hidden relative group">
         {result.status === 'success' && result.imageUrl ? (
-          <img src={`data:image/png;base64,${result.imageUrl}`} alt="Generated outfit" className="w-full h-full object-cover" />
+          <>
+            <img src={`data:image/png;base64,${result.imageUrl}`} alt="Generated outfit" className="w-full h-full object-cover" />
+            <button
+              onClick={() => handleDownload(result.imageUrl!, result.top.name, result.bottom.name)}
+              className="absolute top-2 right-2 bg-indigo-600 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              aria-label="Download image"
+              title="Download image"
+            >
+              <DownloadIcon className="w-5 h-5" />
+            </button>
+          </>
         ) : (
           <div className="w-full h-full bg-red-100 flex flex-col items-center justify-center text-center p-2">
             <p className="text-sm font-semibold text-red-700">Generation Failed</p>
