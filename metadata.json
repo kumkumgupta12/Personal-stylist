@@ -1,0 +1,5 @@
+{
+  "name": "AI Virtual Try-On",
+  "description": "An AI-powered virtual try-on application. Upload a photo of a model, add tops and bottoms to the virtual wardrobe, and generate stylish outfit combinations instantly using Gemini.",
+  "requestFramePermissions": []
+}
